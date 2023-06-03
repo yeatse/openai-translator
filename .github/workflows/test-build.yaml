@@ -103,4 +103,8 @@ jobs:
           xcodebuild -exportArchive -archivePath "dist/browser-extension/safari/OpenAI Translator.xcarchive" -exportPath "dist/browser-extension/safari" -exportOptionsPlist "src-safari/export-opt.plist"
           zip -r -X "dist/browser-extension/safari.zip" "dist/browser-extension/safari/OpenAI Translator.app"
 
-      # todo: upload browser extension artifacts
+      - name: Upload browser extension artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: browser-extension-artifact
+          path: dist/browser-extension/*.zip
