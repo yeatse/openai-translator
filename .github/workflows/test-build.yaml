@@ -71,8 +71,12 @@ jobs:
 
 
   build-browser-extension:
-    runs-on: ubuntu-22.04
-
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-13, ubuntu-22.04]
+    
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
 
@@ -90,4 +94,13 @@ jobs:
 
       - name: Build
         run: make build-browser-extension
+
+      - name: Build safari extension
+        if: matrix.platform == 'macos-13'
+        run: |
+          sudo xcode-select -s /Applications/Xcode_14.3.app/Contents/Developer
+          xcodebuild -project "src-safari/OpenAI Translator.xcodeproj" -scheme "OpenAI Translator (macOS)" -configuration Release archive -archivePath "dist/browser-extension/safari/OpenAI Translator.xcarchive"
+          xcodebuild -exportArchive -archivePath "dist/browser-extension/safari/OpenAI Translator.xcarchive" -exportPath "dist/browser-extension/safari" -exportOptionsPlist "src-safari/export-opt.plist"
+          zip -r -X "dist/browser-extension/safari.zip" "dist/browser-extension/safari/OpenAI Translator.app"
+
       # todo: upload browser extension artifacts
